@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/Users/mghead/lib/emsdk/upstream/emscripten/system/include/emscripten/**"
+      ],
+      "defines": [],
+      "macFrameworkPath": [
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"
+      ],
+      "cppStandard": "c++17",
+      "cStandard": "c11"
+    }
+  ],
+  "version": 4
+}

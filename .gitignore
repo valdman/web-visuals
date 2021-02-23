@@ -1,0 +1,13 @@
+.history
+
+# Cmake
+Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+
+# JS
+node_modules
+
+# Build
+dist
