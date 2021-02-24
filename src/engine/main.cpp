@@ -1,4 +1,7 @@
 #include <emscripten.h>
+#include <emscripten/bind.h>
+
+using namespace emscripten;
 
 #define HEIGHT 400
 #define WIDTH 800
@@ -18,4 +21,8 @@ int* render() {
      }
    }
    return &data[0];
+}
+
+EMSCRIPTEN_BINDINGS(my_module) {
+    function("render", &render, allow_raw_pointer<arg<0>>());
 }

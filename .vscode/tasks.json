@@ -1,24 +1,21 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "shell",
-			"label": "em cmake",
-			"command": "/Users/mghead/lib/emsdk/upstream/emscripten/emcmake",
-			"args": [
-				"cmake",
-				"src/engine"
-			],
-			"problemMatcher": []
-		},
-		{
-			"type": "shell",
-			"label": "em make",
-			"command": "/Users/mghead/lib/emsdk/upstream/emscripten/emmake",
-			"args": [
-				"make"
-			],
-			"problemMatcher": []
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}},
+            "label": "em cmake",
+            "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emcmake",
+            "args": ["cmake", "src/engine"],
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}},
+            "label": "em make",
+            "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emmake",
+            "args": ["make"],
+            "problemMatcher": []
+        }
+    ]
 }

@@ -85,6 +85,10 @@ function getRules({target}: {target: 'client' | 'server'}) {
                 },
             ].filter(Boolean),
         },
+        {
+            test: /\.wasm$/,
+            use: 'wasm-loader',
+        },
     ].filter(Boolean);
 }
 
@@ -94,6 +98,7 @@ const commonSettings: Configuration = {
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src/'),
+            engines: path.resolve(__dirname, 'engines/'),
         },
         extensions: ['.tsx', '.ts', '.js', '.css'],
         fallback: [
@@ -121,7 +126,7 @@ const webappConfig: Configuration = {
                     to: '.',
                 },
                 {
-                    from: 'dist/engine/fractal-engine.wasm',
+                    from: 'engines',
                     to: '.',
                 },
             ],

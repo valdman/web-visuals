@@ -14,7 +14,7 @@ export function syscall(instance: WebAssembly.Instance, n: number, args: number[
 
     switch (n) {
         default:
-            // console.log("Syscall " + n + " NYI.");
+            console.log('Syscall ' + n + ' NYI.');
             break;
         case /* brk */ 45:
             return 0;

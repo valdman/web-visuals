@@ -14,7 +14,8 @@
         "target": "es6",
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "engines/*": ["engines/*"],
         },
         "preserveWatchOutput": true,
         "allowSyntheticDefaultImports": true,

@@ -4,14 +4,11 @@ cmake_policy(SET CMP0015 NEW)
 
 project(fractal-engine)
 
-set(CMAKE_FIND_ROOT_PATH /)
-find_library(emscripten
-    NAMES emscripten
-    HINTS "/Users/mghead/lib/emsdk/upstream/emscripten/system/include/emscripten"
-)
+set(EMSCRIPTEN_PREFIX "/Users/mghead/lib/emsdk/upstream/emscripten")
+include(${CMAKE_CURRENT_SOURCE_DIR}/Toolchain-Emscripten.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY dist/engine)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
 
 # # Does not work
 # # find_package( OpenCV REQUIRED PATHS third-party/opencv-4.1.0/build_wasm NO_DEFAULT_PATH)
