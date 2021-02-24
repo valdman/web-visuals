@@ -85,10 +85,6 @@ function getRules({target}: {target: 'client' | 'server'}) {
                 },
             ].filter(Boolean),
         },
-        {
-            test: /\.wasm$/,
-            use: 'wasm-loader',
-        },
     ].filter(Boolean);
 }
 
@@ -126,7 +122,7 @@ const webappConfig: Configuration = {
                     to: '.',
                 },
                 {
-                    from: 'engines',
+                    from: 'engines/**',
                     to: '.',
                 },
             ],

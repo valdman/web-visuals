@@ -1,47 +1,51 @@
-import {syscall} from './syscall';
-// @ts-ignore
-import LoadFractalEngine from 'engines/fractal/fractal-engine.js';
+import {WASI} from '@wasmer/wasi';
+import wasiBindings from '@wasmer/wasi/lib/bindings/browser';
+import {WasmFs} from '@wasmer/wasmfs';
+
+import {lowerI64Imports} from '@wasmer/wasm-transformer';
 
 const width = 640;
 const height = 360;
 
 const memSize = 256;
 const memory = new WebAssembly.Memory({initial: memSize, maximum: memSize});
-const table = new WebAssembly.Table({initial: 0, element: 'anyfunc'});
+
+const wasmFs = new WasmFs();
+const wasi = new WASI({
+    args: [],
+    env: {},
+    bindings: {
+        ...wasiBindings,
+        fs: wasmFs.fs,
+    },
+});
 
 async function loadWasm(path: string): Promise<WebAssembly.Instance> {
-    let putJsStringBuffer = '';
-
-    // Handler for system calls of any arity
-    function syscallInstance(syscallCode: number, ...args: number[]) {
-        return syscall(instance, syscallCode, args);
-    }
-
+    // Instantiate the WebAssembly file
     const assemblyBytes = await fetch(path).then((response) => response.arrayBuffer());
+    // Instantiate the WebAssembly file
+    const wasmBytes = <Uint8Array> new Uint8Array(assemblyBytes).buffer;
+    const loweredWasm = await lowerI64Imports(wasmBytes);
 
+    const module = await WebAssembly.compile(loweredWasm);
+
+    let wasiImports = null;
+    try {
+        wasiImports = wasi.getImports(module);
+    // eslint-disable-next-line no-empty
+    } finally {}
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {instance, module} = await WebAssembly.instantiate(assemblyBytes, {
-        env: {
-            memory,
-            table,
-            __syscall0: syscallInstance,
-            __syscall1: syscallInstance,
-            __syscall2: syscallInstance,
-            __syscall3: syscallInstance,
-            __syscall4: syscallInstance,
-            __syscall5: syscallInstance,
-            __syscall6: syscallInstance,
-            putc_js: function (charCode: number) {
-                const c = String.fromCharCode(charCode);
-                if (c == '\n') {
-                    console.log(putJsStringBuffer);
-                    putJsStringBuffer = '';
-                } else {
-                    putJsStringBuffer += c;
-                }
-            },
-        },
+    const {instance, module: instModule} = await WebAssembly.instantiate(assemblyBytes, {
+        env: {putc_js(...args: any) {console.log(args);}},
+        ...(wasiImports || {}),
     });
+
+    // Start the WebAssembly WASI instance!
+    wasi.start(instance);
+
+    // Output what's inside of /dev/stdout!
+    const stdout = await wasmFs.getStdOut();
+    console.log(stdout);
 
     return instance;
 }
@@ -51,9 +55,12 @@ interface WasmFunc {
 }
 
 export default async function main(): Promise<void> {
-    const instance = await LoadFractalEngine();
-    // const instance = await loadWasm('/fractal-engine.wasm');
-    const {render: renderFromWasm} = <Record<string, WasmFunc>>instance;
+    // const instance = await LoadFractalEngine();
+    const instance = await loadWasm('/engines/fractal/fractal-engine.wasm');
+    const {render: renderFromWasm} = <Record<string, WasmFunc>>instance.exports;
+
+    const stdout = await wasmFs.getStdOut();
+    console.log(stdout);
 
     // Get 2d drawing context
     const canvas = <HTMLCanvasElement>document.getElementById('c');

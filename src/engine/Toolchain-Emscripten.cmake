@@ -69,10 +69,11 @@ set(CMAKE_CXX_FLAGS_RELEASE_INIT "-DNDEBUG -O3")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "-O3 --llvm-lto 1")
 
 set(EMCC_ONLY_FORCED_STDLIBS 1)
-set(CMAKE_EXECUTABLE_SUFFIX ".js")
+set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
 set(CMAKE_CXX_FLAGS "-std=c++11 \
     -s ENVIRONMENT=\"web\" \
     -s MODULARIZE=1 \
-    --no-entry \
-    --bind"
+    -s ASSERTIONS=1 \
+    -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
+    --no-entry"
 )

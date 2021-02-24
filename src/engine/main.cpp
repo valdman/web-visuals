@@ -1,28 +1,30 @@
+#include <stdio.h>
+#include <sys/uio.h>
+
 #include <emscripten.h>
-#include <emscripten/bind.h>
 
-using namespace emscripten;
+#define EMSCRIPTEN_EXPORT extern "C" __attribute__((visibility("default")))
 
-#define HEIGHT 400
-#define WIDTH 800
-
-#define WASM_EXPORT extern "C" __attribute__((visibility( "default")))
-
-int data[WIDTH * HEIGHT];
-int red = (255 << 24) | 255;
-
-WASM_EXPORT
+EMSCRIPTEN_EXPORT
 EMSCRIPTEN_KEEPALIVE
-int* render() {
-   for (int y = 0; y < HEIGHT; y++) {
-     int yw = y * WIDTH;
-     for (int x = 0; x < WIDTH; x++) {
-       data[yw + x] = red;
-     }
-   }
-   return &data[0];
+int render(void) {
+  printf("Hello World\n");
+  return 1488;
 }
 
-EMSCRIPTEN_BINDINGS(my_module) {
-    function("render", &render, allow_raw_pointer<arg<0>>());
+/* External function that is implemented in JavaScript. */
+EMSCRIPTEN_EXPORT
+void putc_js(char c);
+
+/* Basic implementation of the writev sys call. */ 
+EMSCRIPTEN_KEEPALIVE
+size_t writev_c(int fd, const struct iovec *iov, int iovcnt) {
+  size_t cnt = 0;
+  for (int i = 0; i < iovcnt; i++) {
+    for (int j = 0; j < iov[i].iov_len; j++) {
+      putc_js(((char *)iov[i].iov_base)[j]);
+    }
+    cnt += iov[i].iov_len;
+  }
+  return cnt;
 }
