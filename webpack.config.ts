@@ -122,7 +122,10 @@ const webappConfig: Configuration = {
                     to: '.',
                 },
                 {
-                    from: 'engines/**',
+                    from: 'engines/**/*',
+                    filter(resourcePath: string) {
+                        return resourcePath.endsWith('.wasm') || resourcePath.endsWith('.js');
+                    },
                     to: '.',
                 },
             ],

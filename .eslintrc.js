@@ -4,6 +4,7 @@ module.exports = {
         es2021: true,
         node: true,
     },
+    ignorePatterns: ['engines'],
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',
