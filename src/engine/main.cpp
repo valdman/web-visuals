@@ -1,23 +1,22 @@
 // #include <iostream>
-
-#include <array>
 #include <emscripten.h>
 
 #define EMSCRIPTEN_EXPORT extern "C" __attribute__((visibility("default")))
 
-std::array<int, 5> fillarr()
+int* fillarr()
 {
-    std::array<int, 5> arr2 {1, 4, 8, 8};
-    for(int i=0; i<5; ++i) {
-        arr2[i] = arr2[i] * 2;
+    int* arr = new int[4] {1, 4, 8, 8};
+    for(int i=0; i<4; ++i) {
+        arr[i] = arr[i] * 2;
     }
-    return arr2;
+    return arr;
 }
 
 EMSCRIPTEN_EXPORT
 EMSCRIPTEN_KEEPALIVE
-std::array<int, 5> render()
+int* render()
 {
+  // std::cout << "salam" << std::endl;
   return fillarr();
 }
 

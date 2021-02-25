@@ -1756,6 +1756,21 @@ var ASM_CONSTS = {
       if (Module['extraStackTrace']) js += '\n' + Module['extraStackTrace']();
       return demangleAll(js);
     }
+
+  function _abort() {
+      abort();
+    }
+
+  function _emscripten_get_heap_size() {
+      return HEAPU8.length;
+    }
+  
+  function abortOnCannotGrowMemory(requestedSize) {
+      abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with  -s INITIAL_MEMORY=X  with X higher than the current value ' + HEAP8.length + ', (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ');
+    }
+  function _emscripten_resize_heap(requestedSize) {
+      abortOnCannotGrowMemory(requestedSize);
+    }
 var ASSERTIONS = true;
 
 
@@ -1786,7 +1801,8 @@ function intArrayToString(array) {
 
 
 var asmLibraryArg = {
-  
+  "abort": _abort,
+  "emscripten_resize_heap": _emscripten_resize_heap
 };
 var asm = createWasm();
 /** @type {function(...*):?} */
