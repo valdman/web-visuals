@@ -1,4 +1,4 @@
-// #include <iostream>
+#include <iostream>
 #include <emscripten.h>
 
 #define EMSCRIPTEN_EXPORT extern "C" __attribute__((visibility("default")))
@@ -14,10 +14,10 @@ int* fillarr()
 
 EMSCRIPTEN_EXPORT
 EMSCRIPTEN_KEEPALIVE
-int* render()
+int render(int a)
 {
-  // std::cout << "salam" << std::endl;
-  return fillarr();
+  std::cout << "salam" << a << std::endl;
+  return 0;
 }
 
 // /* External function that is implemented in JavaScript. */
