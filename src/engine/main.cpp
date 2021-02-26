@@ -2,9 +2,6 @@
 #include <iostream>
 #include <vector>
 
-#include <opencv2/highgui.hpp>
-#include <opencv2/opencv.hpp>
-
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #include <emscripten/bind.h>
@@ -27,15 +24,15 @@ class Process {
         return arr;
     }
 
-    int_vector randImage() {
-        Mat img(100, 100, CV_8UC3);
-        randu(img, Scalar(0, 0, 0), Scalar(255, 255, 255));
+    // int_vector randImage() {
+    //     Mat img(100, 100, CV_8UC3);
+    //     randu(img, Scalar(0, 0, 0), Scalar(255, 255, 255));
 
-        imshow("random colors image", img);
-        waitKey();
+    //     imshow("random colors image", img);
+    //     waitKey();
 
-        return 0;
-    }
+    //     return 0;
+    // }
 
     int salam(int a) {
         std::cout << "salam " << a << std::endl;

@@ -6,13 +6,13 @@
             "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}},
             "label": "em cmake",
             "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emcmake",
-            "args": ["cmake", "src/engine"],
+            "args": ["cmake", "-S", "src/engine", "-B", "build_wasm"],
             "problemMatcher": [],
             "dependsOn": ["clean"]
         },
         {
             "type": "shell",
-            "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}},
+            "options": {"shell": {"executable": "/bin/bash", "args": ["-c"]}, "cwd": "build_wasm"},
             "label": "em make",
             "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emmake",
             "args": ["make"],
@@ -22,14 +22,14 @@
             "type": "shell",
             "label": "clean",
             "command": "rm",
-            "args": ["-rf", "'CMake*'", "'cmake*'", "'Makefile'"],
+            "args": ["-rf", "'CMake*'", "CMakeCache.txt", "'cmake_install.cmake'", "'Makefile'"],
             "problemMatcher": [],
         },
         {
             "type": "shell",
             "label": "cmake",
             "command": "cmake",
-            "args": ["cmake", "src/engine"],
+            "args": ["-S", "src/engine", "-B", "build_native"],
             "problemMatcher": [],
             "dependsOn": ["clean"],
         },
@@ -37,6 +37,7 @@
             "type": "shell",
             "label": "make",
             "command": "make",
+            "options": {"cwd": "build_native"},
             "problemMatcher": [],
         }
     ]

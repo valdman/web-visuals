@@ -1,5 +1,5 @@
-import {locateFile, Vector} from 'engines';
-import LoadFractalEngine from 'engines/fractal';
+import {locateFile, Vector} from '@/wasm';
+import LoadFractalEngine from '@/wasm/fractal';
 
 const WIDTH = 800;
 const HEIGHT = 600;

@@ -1,5 +1,5 @@
 export function locateFile(path: string, prefix: string): string {
-    return `${prefix}engines/fractal/${path}`;
+    return `${prefix}static/${path}`;
 }
 
 export interface Vector<T> {
@@ -9,6 +9,12 @@ export interface Vector<T> {
     push_back(value: T): Vector<T>;
     resize(size_t: number, value: T): void;
 }
+
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Type definitions for Emscripten 1.39.16
 // Project: https://emscripten.org
@@ -261,9 +267,9 @@ declare namespace FS {
     ): FSNode;
 }
 
-declare var MEMFS: Emscripten.FileSystemType;
-declare var NODEFS: Emscripten.FileSystemType;
-declare var IDBFS: Emscripten.FileSystemType;
+declare let MEMFS: Emscripten.FileSystemType;
+declare let NODEFS: Emscripten.FileSystemType;
+declare let IDBFS: Emscripten.FileSystemType;
 
 // Below runtime function/variable declarations are exportable by
 // -s EXTRA_EXPORTED_RUNTIME_METHODS. You can extend or merge
@@ -333,8 +339,8 @@ declare function removeRunDependency(id: any): void;
 declare function addFunction(func: (...args: any[]) => any, signature?: string): number;
 declare function removeFunction(funcPtr: number): void;
 
-declare var ALLOC_NORMAL: number;
-declare var ALLOC_STACK: number;
-declare var ALLOC_STATIC: number;
-declare var ALLOC_DYNAMIC: number;
-declare var ALLOC_NONE: number;
+declare let ALLOC_NORMAL: number;
+declare let ALLOC_STACK: number;
+declare let ALLOC_STATIC: number;
+declare let ALLOC_DYNAMIC: number;
+declare let ALLOC_NONE: number;

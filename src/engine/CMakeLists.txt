@@ -2,19 +2,19 @@ cmake_minimum_required(VERSION 3.12)
 set( CMAKE_CXX_STANDARD 11 )
 cmake_policy(SET CMP0015 NEW)
 
+# cmake -DCMAKE_BUILD_TYPE=Release
 project(fractal-engine)
-
-# OpenCV
-set(OpenCV_DIR /Users/mghead/lib/opencv)
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake)
-message(AUTHOR_WARNING ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(OpenCV REQUIRED core highgui imgproc)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
 
-target_link_libraries(fractal-engine ${OpenCV_LIBS})
-add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp )
+# OpenCV
+set(OpenCV_SOURCE_DIR /Users/mghead/lib/opencv)
+if(EMSCRIPTEN)
+    set(OpenCV_BINARY_DIR /Users/mghead/bin/opencv/build_wasm)
+else()
+    set(OpenCV_BINARY_DIR /Users/mghead/lib/opencv/build_native)
+endif()
 
+# include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
 
 # Emscripten compiler conf
 if(EMSCRIPTEN)
@@ -39,5 +39,7 @@ if(EMSCRIPTEN)
         "
     )
 
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindEmscripten.cmake )
+    include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindEmscripten.cmake )
 endif()
+
+add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)

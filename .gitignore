@@ -12,7 +12,5 @@ node_modules
 # Build
 dist
 
-# EMSCRIPTEN build dir - keep code only. Other guys here are binary
-engines/**/*
-!engines/**/*.js
-!engines/**/*.ts
+# EMSCRIPTEN & native build dir
+build*

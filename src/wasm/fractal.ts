@@ -1,7 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import LoadFractal from './fractal-engine.js';
+import LoadFractal from 'wasm/fractal/fractal-engine.js';
 
-import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory, Vector} from 'engines';
+import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory, Vector} from '@/wasm';
 
 declare class Process {
     constructor();

@@ -94,7 +94,7 @@ const commonSettings: Configuration = {
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src/'),
-            engines: path.resolve(__dirname, 'engines/'),
+            wasm: path.resolve(__dirname, 'build_wasm/engines/'),
         },
         extensions: ['.tsx', '.ts', '.js', '.css'],
         fallback: [
@@ -122,12 +122,12 @@ const webappConfig: Configuration = {
                     to: '.',
                 },
                 {
-                    from: 'engines/**/*',
+                    from: 'build_wasm/engines/**/*',
                     filter(resourcePath: string) {
-                        const copyExtenstions = ['.wasm', '.js', '.wasm.map'];
+                        const copyExtenstions = ['.wasm', '.wasm.map'];
                         return copyExtenstions.some((ext) => resourcePath.endsWith(ext));
                     },
-                    to: '.',
+                    to: 'static/[name].[ext]',
                 },
             ],
         }),
