@@ -1,23 +1,25 @@
 #include <iostream>
+#include <ctime>
 #include <vector>
 
 #include <emscripten.h>
 #include <emscripten/bind.h>
 
-#define intVector std::vector<int>
+#define int_vector std::vector<int>
 
 class Process {
 
   public:
     Process(){};
 
-    intVector fillarr()
+    int_vector fillarr(int size)
     {
-        auto arr = intVector{1, 4, 8, 8};
-        for(int i=0; i<4; ++i) {
-            arr[i] = arr[i] * 2;
+        srand((unsigned) time(0));
+        auto arr = int_vector{};
+
+        for(int i=0; i < size; ++i) {
+            arr.push_back((rand() % 255) + 1);
         }
-        std::cout << &arr << std::endl;
         return arr;
     }
 
@@ -30,7 +32,7 @@ class Process {
 
 EMSCRIPTEN_BINDINGS(main) {
     emscripten::register_vector<int>("vector<int>");
-    emscripten::smart_ptr_trait<std::shared_ptr<intVector>>();
+    emscripten::smart_ptr_trait<std::shared_ptr<int_vector>>();
 
     emscripten::class_<Process>("Process")
       .constructor<>()

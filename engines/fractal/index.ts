@@ -5,7 +5,7 @@ import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory, Vector} from 'e
 
 declare class Process {
     constructor();
-    fillarr(): Vector<number>;
+    fillarr(size: number): Vector<number>;
     salam(a: number): number;
 }
 export interface Bindings {

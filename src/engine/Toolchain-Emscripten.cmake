@@ -79,6 +79,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 \
     -s EXPORTED_FUNCTIONS=[] \
     -s EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
     -s DEMANGLE_SUPPORT=1 \
+    -s ALLOW_MEMORY_GROWTH=1 \
     --no-entry \
     --bind \
     -g4 \

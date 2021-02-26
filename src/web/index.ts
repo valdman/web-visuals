@@ -1,5 +1,8 @@
-import {locateFile} from 'engines';
+import {locateFile, Vector} from 'engines';
 import LoadFractalEngine from 'engines/fractal';
+
+const WIDTH = 800;
+const HEIGHT = 600;
 
 export default async function main(): Promise<void> {
     const module = await LoadFractalEngine({
@@ -7,20 +10,26 @@ export default async function main(): Promise<void> {
     });
 
     const processInstance = new module.Process();
-    const resultVector = processInstance.fillarr();
-    const size = resultVector.size();
-    for (let index = 0; index < size; index++) {
-        const element = resultVector.get(index);
-        console.log(`v[${index}] `, element);
+
+    const canvas = <HTMLCanvasElement>document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    function* enumerateVector<T>(vector: Vector<T>): Generator<T> {
+        const size = vector.size();
+
+        for (let index = 0; index < size; index++) {
+            const element = vector.get(index);
+            yield element;
+        }
     }
 
-    // // Get 2d drawing context
-    // const canvas = <HTMLCanvasElement>document.getElementById('c');
-    // const ctx = canvas.getContext('2d');
+    setInterval(() => {
+        const resultVector = processInstance.fillarr(WIDTH * HEIGHT * 4);
+        const imageData = new Uint8ClampedArray(enumerateVector(resultVector));
 
-    // const data = new Uint8ClampedArray(memory.buffer, pointer, width * height * 4);
-    // const img = new ImageData(data, width, height);
-    // ctx.putImageData(img, 0, 0);
+        const img = new ImageData(imageData, WIDTH, HEIGHT);
+        ctx.putImageData(img, 0, 0);
+    }, 10);
 }
 
 main();
