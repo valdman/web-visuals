@@ -7,7 +7,8 @@
             "label": "em cmake",
             "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emcmake",
             "args": ["cmake", "src/engine"],
-            "problemMatcher": []
+            "problemMatcher": [],
+            "dependsOn": ["clean"]
         },
         {
             "type": "shell",
@@ -16,6 +17,27 @@
             "command": "/Users/mghead/lib/emsdk/upstream/emscripten/emmake",
             "args": ["make"],
             "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "clean",
+            "command": "rm",
+            "args": ["-rf", "'CMake*'", "'cmake*'", "'Makefile'"],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "cmake",
+            "command": "cmake",
+            "args": ["cmake", "src/engine"],
+            "problemMatcher": [],
+            "dependsOn": ["clean"],
+        },
+        {
+            "type": "shell",
+            "label": "make",
+            "command": "make",
+            "problemMatcher": [],
         }
     ]
 }

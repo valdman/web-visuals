@@ -2,8 +2,10 @@
 #include <ctime>
 #include <vector>
 
-#include <emscripten.h>
-#include <emscripten/bind.h>
+#ifdef EMSCRIPTEN
+  #include <emscripten.h>
+  #include <emscripten/bind.h>
+#endif
 
 #define int_vector std::vector<int>
 
@@ -30,6 +32,20 @@ class Process {
     }
 };
 
+int main() {
+  auto p = new Process();
+  auto test = p->fillarr(800 * 600 * 4);
+  for (int i = 0; i < test.size(); i++)
+  {
+    std::cout << test.at(i) << " ";
+  }
+
+  std::cout << std::endl;
+  
+  return 0;
+}
+
+#ifdef EMSCRIPTEN
 EMSCRIPTEN_BINDINGS(main) {
     emscripten::register_vector<int>("vector<int>");
     emscripten::smart_ptr_trait<std::shared_ptr<int_vector>>();
@@ -39,6 +55,7 @@ EMSCRIPTEN_BINDINGS(main) {
       .function("fillarr", &Process::fillarr)
       .function("salam", &Process::salam);
 }
+#endif
 
 // /* External function that is implemented in JavaScript. */
 // EMSCRIPTEN_EXPORT
