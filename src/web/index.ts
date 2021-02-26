@@ -6,12 +6,13 @@ export default async function main(): Promise<void> {
         locateFile,
     });
 
-    const getResultPtr = module.cwrap('fillarr', 'number', []);
-    const len = 5;
-    const resultPtr = getResultPtr();
-    console.log('resultPtr: ', resultPtr);
-    const result = new Uint8Array(module.HEAPU8.subarray(resultPtr, resultPtr + len), resultPtr, 5);
-    console.log(result);
+    const processInstance = new module.Process();
+    const resultVector = processInstance.fillarr();
+    const size = resultVector.size();
+    for (let index = 0; index < size; index++) {
+        const element = resultVector.get(index);
+        console.log(`v[${index}] `, element);
+    }
 
     // // Get 2d drawing context
     // const canvas = <HTMLCanvasElement>document.getElementById('c');

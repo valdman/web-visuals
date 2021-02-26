@@ -1,5 +1,13 @@
 export function locateFile(path: string, prefix: string): string {
-    return `${prefix}/engines/fractal/${path}`;
+    return `${prefix}engines/fractal/${path}`;
+}
+
+export interface Vector<T> {
+    size(): number;
+    get(i: number): T;
+    set(value: T, index: number): void;
+    push_back(value: T): Vector<T>;
+    resize(size_t: number, value: T): void;
 }
 
 // Type definitions for Emscripten 1.39.16

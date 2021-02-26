@@ -76,7 +76,12 @@ set(CMAKE_CXX_FLAGS "-std=c++11 \
     -s MODULARIZE=1 \
     -s ASSERTIONS=1 \
     -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
-    -s EXPORTED_FUNCTIONS=['_render','_fillarr'] \
+    -s EXPORTED_FUNCTIONS=[] \
     -s EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
-    --no-entry"
+    -s DEMANGLE_SUPPORT=1 \
+    --no-entry \
+    --bind \
+    -g4 \
+    --source-map-base /engines/fractal/ \
+    "
 )

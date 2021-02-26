@@ -124,7 +124,8 @@ const webappConfig: Configuration = {
                 {
                     from: 'engines/**/*',
                     filter(resourcePath: string) {
-                        return resourcePath.endsWith('.wasm') || resourcePath.endsWith('.js');
+                        const copyExtenstions = ['.wasm', '.js', '.wasm.map'];
+                        return copyExtenstions.some((ext) => resourcePath.endsWith(ext));
                     },
                     to: '.',
                 },
