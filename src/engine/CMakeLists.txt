@@ -4,6 +4,19 @@ cmake_policy(SET CMP0015 NEW)
 
 project(fractal-engine)
 
+# OpenCV
+set(OpenCV_DIR /Users/mghead/lib/opencv)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake)
+message(AUTHOR_WARNING ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(OpenCV REQUIRED core highgui imgproc)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
+
+target_link_libraries(fractal-engine ${OpenCV_LIBS})
+add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp )
+
+
+# Emscripten compiler conf
 if(EMSCRIPTEN)
     set(EMSCRIPTEN_PREFIX "/Users/mghead/lib/emsdk/upstream/emscripten")
 
@@ -26,28 +39,5 @@ if(EMSCRIPTEN)
         "
     )
 
-    include(${CMAKE_CURRENT_SOURCE_DIR}/Toolchain-Emscripten.cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindEmscripten.cmake )
 endif()
-
-set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
-
-# # Does not work
-# # find_package( OpenCV REQUIRED PATHS third-party/opencv-4.1.0/build_wasm NO_DEFAULT_PATH)
-
-# # Needed for opencv2/opencv.hpp
-# include_directories(third-party/opencv-4.1.0/include )
-
-# # Needed by opencv.hpp for opencv2/opencv_modules.hpp
-# include_directories(third-party/opencv-4.1.0/build_wasm )
-
-# # Needed by opencv_modules.hpp for every module
-# file( GLOB opencv_include_modules "third-party/opencv-4.1.0/modules/*/include" )
-# include_directories(${opencv_include_modules} )
-
-# # Link to opencv.js precompiled libraries
-# file( GLOB opencv_js "third-party/opencv-4.1.0/build_wasm/lib/*.a" )
-# target_link_libraries(hello ${opencv_js})
-
-
-add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
