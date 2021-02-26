@@ -36,9 +36,9 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], 'abort')) {
-        Object.defineProperty(Module['ready'], 'abort', { configurable: true, get: function() { abort('You are getting abort on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], 'abort', { configurable: true, set: function() { abort('You are setting abort on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_fillarr')) {
+        Object.defineProperty(Module['ready'], '_fillarr', { configurable: true, get: function() { abort('You are getting _fillarr on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '_fillarr', { configurable: true, set: function() { abort('You are setting _fillarr on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
       }
     
 
@@ -4686,6 +4686,9 @@ var asmLibraryArg = {
 var asm = createWasm();
 /** @type {function(...*):?} */
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
+
+/** @type {function(...*):?} */
+var _fillarr = Module["_fillarr"] = createExportWrapper("fillarr");
 
 /** @type {function(...*):?} */
 var _render = Module["_render"] = createExportWrapper("render");

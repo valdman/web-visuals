@@ -1,15 +1,22 @@
 #include <iostream>
+#include <vector>
+
 #include <emscripten.h>
+#include <emscripten/bind.h>
 
 #define EMSCRIPTEN_EXPORT extern "C" __attribute__((visibility("default")))
 
-int* fillarr()
+EMSCRIPTEN_EXPORT
+EMSCRIPTEN_KEEPALIVE
+std::shared_ptr<std::vector<int>> fillarr()
 {
-    int* arr = new int[4] {1, 4, 8, 8};
+    std::vector<int> arr{1, 4, 8, 8};
     for(int i=0; i<4; ++i) {
         arr[i] = arr[i] * 2;
     }
-    return arr;
+    auto ptr = std::make_shared<std::vector<int>>(arr);
+    std::cout << ptr << std::endl;
+    return ptr;
 }
 
 EMSCRIPTEN_EXPORT
@@ -19,6 +26,12 @@ int render(int a)
   std::cout << "salam" << a << std::endl;
   return 0;
 }
+
+// EMSCRIPTEN_BINDINGS(better_smart_pointers) {
+//     class_<C>("C")
+//         .smart_ptr_constructor("C", &std::make_shared<C>)
+//         ;
+// }
 
 // /* External function that is implemented in JavaScript. */
 // EMSCRIPTEN_EXPORT

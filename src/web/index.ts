@@ -5,7 +5,12 @@ export default async function main(): Promise<void> {
     const module = await LoadFractalEngine({
         locateFile,
     });
-    const result = module.ccall('render', 'number', ['number'], [1488]);
+
+    const getResultPtr = module.cwrap('fillarr', 'number', []);
+    const len = 5;
+    const resultPtr = getResultPtr();
+    console.log('resultPtr: ', resultPtr);
+    const result = new Uint8Array(module.HEAPU8.subarray(resultPtr, resultPtr + len), resultPtr, 5);
     console.log(result);
 
     // // Get 2d drawing context

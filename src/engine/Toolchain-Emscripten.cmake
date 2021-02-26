@@ -76,7 +76,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 \
     -s MODULARIZE=1 \
     -s ASSERTIONS=1 \
     -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
-    -s EXPORTED_FUNCTIONS=['_render','abort'] \
+    -s EXPORTED_FUNCTIONS=['_render','_fillarr'] \
     -s EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] \
     --no-entry"
 )
