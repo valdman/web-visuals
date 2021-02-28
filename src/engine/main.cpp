@@ -2,6 +2,9 @@
 #include <iostream>
 #include <vector>
 
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #include <emscripten/bind.h>
@@ -24,15 +27,24 @@ class Process {
         return arr;
     }
 
-    // int_vector randImage() {
-    //     Mat img(100, 100, CV_8UC3);
-    //     randu(img, Scalar(0, 0, 0), Scalar(255, 255, 255));
+    int_vector randImage() {
+        cv::Mat img(800, 600, CV_8UC4);
+        cv::randu(img, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
 
-    //     imshow("random colors image", img);
-    //     waitKey();
+        std::vector<uchar> array;
+        if (img.isContinuous()) {
+            // array.assign(mat.datastart, mat.dataend); // <- has problems for
+            // sub-matrix like mat = big_mat.row(i)
+            array.assign(img.data, img.data + img.total() * img.channels());
+        } else {
+            for (int i = 0; i < img.rows; ++i) {
+                array.insert(array.end(), img.ptr<uchar>(i),
+                             img.ptr<uchar>(i) + img.cols * img.channels());
+            }
+        }
 
-    //     return 0;
-    // }
+        return int_vector(img);
+    }
 
     int salam(int a) {
         std::cout << "salam " << a << std::endl;
@@ -42,7 +54,7 @@ class Process {
 
 int main() {
     auto p = new Process();
-    auto test = p->fillarr(800 * 600 * 4);
+    auto test = p->randImage();
     for (int i = 0; i < test.size(); i++) {
         std::cout << test.at(i) << " ";
     }
@@ -60,7 +72,10 @@ EMSCRIPTEN_BINDINGS(main) {
     emscripten::class_<Process>("Process")
         .constructor<>()
         .function("fillarr", &Process::fillarr)
-        .function("salam", &Process::salam);
+        .function("salam", &Process::salam)
+        .function("randImage", &Process::randImage);
+
+    emscripten::class_<cv::Mat>("cvMat");
 }
 #endif
 

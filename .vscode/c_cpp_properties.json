@@ -5,10 +5,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "/Users/mghead/lib/emsdk/upstream/emscripten/**",
-        "/Users/mghead/lib/opencv/include/**",
-        "/Users/mghead/lib/opencv/modules/core/include/**",
-        "/Users/mghead/lib/opencv/modules/highgui/include/**",
-        "/Users/mghead/lib/opencv/modules/imgproc/include/**"
+        "/usr/local/include/opencv4/**"
       ],
       "defines": [],
       "macFrameworkPath": [

@@ -24,7 +24,7 @@ export default async function main(): Promise<void> {
     }
 
     setInterval(() => {
-        const resultVector = processInstance.fillarr(WIDTH * HEIGHT * 4);
+        const resultVector = processInstance.randImage();
         const imageData = new Uint8ClampedArray(enumerateVector(resultVector));
 
         const img = new ImageData(imageData, WIDTH, HEIGHT);

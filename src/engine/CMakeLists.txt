@@ -7,23 +7,17 @@ project(fractal-engine)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
 
 # OpenCV
-set(OpenCV_SOURCE_DIR /Users/mghead/lib/opencv)
-if(EMSCRIPTEN)
-    set(OpenCV_BINARY_DIR /Users/mghead/bin/opencv/build_wasm)
-else()
-    set(OpenCV_BINARY_DIR /Users/mghead/lib/opencv/build_native)
-endif()
+set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
+include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
 
-# include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
-
-# Emscripten compiler conf
+# Emscripten
 if(EMSCRIPTEN)
     set(EMSCRIPTEN_PREFIX "/Users/mghead/lib/emsdk/upstream/emscripten")
 
     set(EMCC_ONLY_FORCED_STDLIBS 1)
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
     set(CMAKE_CXX_FLAGS "-std=c++11 \
-        -fno-exceptions \
+        -fexceptions \
         -s ENVIRONMENT=\"web\" \
         -s MODULARIZE=1 \
         -s ASSERTIONS=1 \
@@ -40,6 +34,6 @@ if(EMSCRIPTEN)
     )
 
     include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindEmscripten.cmake )
-endif()
+endif(EMSCRIPTEN)
 
 add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)

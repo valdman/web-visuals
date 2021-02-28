@@ -8,6 +8,7 @@ declare class Process {
     constructor();
     fillarr(size: number): Vector<number>;
     salam(a: number): number;
+    randImage(): Vector<number>;
 }
 export interface Bindings {
     Process: typeof Process;
