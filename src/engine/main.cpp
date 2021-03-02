@@ -1,83 +1,61 @@
-#include <ctime>
-#include <iostream>
-#include <vector>
+#include <emscripten/bind.h>
+#include <emscripten/val.h>
 
-#include <opencv2/imgproc.hpp>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-#include <emscripten/bind.h>
-#endif
+#include <stdio.h>
 
-#define int_vector std::vector<int>
+using namespace cv;
+using namespace emscripten;
 
 class Process {
+  private:
+    std::vector<unsigned char> buffer;
+    Mat decoded;
 
   public:
-    Process(){};
+    Process() : buffer{}, decoded{} {};
 
-    int_vector fillarr(int size) {
-        srand((unsigned)time(0));
-        auto arr = int_vector{};
-
-        for (int i = 0; i < size; ++i) {
-            arr.push_back((rand() % 255) + 1);
-        }
-        return arr;
+    val allocate(size_t size) {
+        this->buffer.reserve(size);
+        unsigned char* byteBuffer = this->buffer.data();
+        return val(typed_memory_view(size, byteBuffer));
     }
 
-    int_vector randImage() {
-        cv::Mat img(800, 600, CV_8UC4);
-        cv::randu(img, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
+    val randarr(int width, int height) {
+        Mat img(width, height, CV_8UC4);
+        randu(img, Scalar(0, 0, 0, 255), Scalar(255, 255, 255, 255));
 
-        std::vector<uchar> array;
-        if (img.isContinuous()) {
-            // array.assign(mat.datastart, mat.dataend); // <- has problems for
-            // sub-matrix like mat = big_mat.row(i)
-            array.assign(img.data, img.data + img.total() * img.channels());
-        } else {
-            for (int i = 0; i < img.rows; ++i) {
-                array.insert(array.end(), img.ptr<uchar>(i),
-                             img.ptr<uchar>(i) + img.cols * img.channels());
-            }
-        }
-
-        return int_vector(img);
+        unsigned char* byteBuffer = img.data;
+        return val(typed_memory_view(width * height * 4, byteBuffer));
     }
 
-    int salam(int a) {
-        std::cout << "salam " << a << std::endl;
-        return 0;
+    val blackImage(int width, int height) {
+        cv::Mat image(width, height, CV_8UC4, cv::Scalar(0, 0, 0));
+        unsigned char* byteBuffer = image.data;
+        return val(typed_memory_view(width * height * 4, byteBuffer));
+    }
+
+    Mat my_imdecode() {
+        // this->decoded = imdecode(this->buffer, IMREAD_GRAYSCALE);
+        return this->decoded;
     }
 };
 
-int main() {
-    auto p = new Process();
-    auto test = p->randImage();
-    for (int i = 0; i < test.size(); i++) {
-        std::cout << test.at(i) << " ";
-    }
-
-    std::cout << std::endl;
-
-    return 0;
-}
-
-#ifdef EMSCRIPTEN
-EMSCRIPTEN_BINDINGS(main) {
-    emscripten::register_vector<int>("vector<int>");
-    emscripten::smart_ptr_trait<std::shared_ptr<int_vector>>();
-
-    emscripten::class_<Process>("Process")
+EMSCRIPTEN_BINDINGS(my_module) {
+    class_<Mat>("Mat");
+    class_<Process>("Process")
         .constructor<>()
-        .function("fillarr", &Process::fillarr)
-        .function("salam", &Process::salam)
-        .function("randImage", &Process::randImage);
+        .function("randarr", &Process::randarr)
+        .function("blackImage", &Process::blackImage)
+        .function("imdecode", &Process::my_imdecode)
+        .function("allocate", &Process::allocate);
+    register_vector<int>("vector<int>");
 
-    emscripten::class_<cv::Mat>("cvMat");
+    smart_ptr_trait<std::shared_ptr<std::vector<int>>>();
 }
-#endif
 
 // /* External function that is implemented in JavaScript. */
 // EMSCRIPTEN_EXPORT

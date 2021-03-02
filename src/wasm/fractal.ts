@@ -4,11 +4,11 @@ import LoadFractal from 'wasm/fractal/fractal-engine.js';
 
 import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory, Vector} from '@/wasm';
 
-declare class Process {
+export declare class Process {
     constructor();
-    fillarr(size: number): Vector<number>;
-    salam(a: number): number;
-    randImage(): Vector<number>;
+    allocate(size_t: number): number[];
+    randarr(width: number, height: number): number[];
+    blackImage(width: number, height: number): number[];
 }
 export interface Bindings {
     Process: typeof Process;

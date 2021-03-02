@@ -5,10 +5,22 @@ cmake_policy(SET CMP0015 NEW)
 # cmake -DCMAKE_BUILD_TYPE=Release
 project(fractal-engine)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
+add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 # OpenCV
-set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
-include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
+if(EMSCRIPTEN)
+    # Does not work
+    # find_package( OpenCV REQUIRED PATHS third-party/opencv-4.1.0/build_wasm NO_DEFAULT_PATH)
+
+    include_directories(/usr/local/include/opencv4)
+    include_directories(/Users/mghead/bin/opencv/build_wasm)
+    file(GLOB opencv_js "/Users/mghead/bin/opencv/build_wasm/lib/*.a")
+    target_link_libraries(fractal-engine ${opencv_js})
+
+else()
+    set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
+    include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
+endif(EMSCRIPTEN)
 
 # Emscripten
 if(EMSCRIPTEN)
@@ -35,5 +47,3 @@ if(EMSCRIPTEN)
 
     include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindEmscripten.cmake )
 endif(EMSCRIPTEN)
-
-add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)

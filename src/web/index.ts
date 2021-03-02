@@ -1,5 +1,5 @@
-import {locateFile, Vector} from '@/wasm';
-import LoadFractalEngine from '@/wasm/fractal';
+import {locateFile} from '@/wasm';
+import LoadFractalEngine, {Process} from '@/wasm/fractal';
 
 const WIDTH = 800;
 const HEIGHT = 600;
@@ -14,22 +14,18 @@ export default async function main(): Promise<void> {
     const canvas = <HTMLCanvasElement>document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
-    function* enumerateVector<T>(vector: Vector<T>): Generator<T> {
-        const size = vector.size();
-
-        for (let index = 0; index < size; index++) {
-            const element = vector.get(index);
-            yield element;
-        }
-    }
-
     setInterval(() => {
-        const resultVector = processInstance.randImage();
-        const imageData = new Uint8ClampedArray(enumerateVector(resultVector));
+        draw(processInstance, ctx);
+    }, 1000 / 30);
+    draw(processInstance, ctx);
+}
 
-        const img = new ImageData(imageData, WIDTH, HEIGHT);
-        ctx.putImageData(img, 0, 0);
-    }, 10);
+function draw(processInstance: Process, ctx: CanvasRenderingContext2D) {
+    const resultVector = processInstance.randarr(WIDTH, HEIGHT);
+    const imageData = new Uint8ClampedArray(resultVector);
+
+    const img = new ImageData(imageData, WIDTH, HEIGHT);
+    ctx.putImageData(img, 0, 0);
 }
 
 main();
