@@ -8,6 +8,7 @@ export declare class Process {
     constructor();
     allocate(size_t: number): number[];
     randarr(width: number, height: number): number[];
+    mand(width: number, height: number): number[];
     blackImage(width: number, height: number): number[];
 }
 export interface Bindings {

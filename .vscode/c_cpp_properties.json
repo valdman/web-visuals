@@ -3,7 +3,7 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/engine/**",
                 "/usr/local/include/opencv4/**",
                 "/Users/mghead/lib/emsdk/upstream/emscripten/**"
             ],

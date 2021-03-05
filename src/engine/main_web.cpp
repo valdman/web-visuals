@@ -5,7 +5,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
-#include <stdio.h>
+#include "mandelbrot.cpp"
 
 using namespace cv;
 using namespace emscripten;
@@ -33,8 +33,17 @@ class Process {
     }
 
     val blackImage(int width, int height) {
-        cv::Mat image(width, height, CV_8UC4, cv::Scalar(0, 0, 0));
+        Mat image(width, height, CV_8UC4, Scalar(0, 0, 0));
         unsigned char* byteBuffer = image.data;
+        return val(typed_memory_view(width * height * 4, byteBuffer));
+    }
+
+    val mand(int width, int height) {
+        auto I = generateImage(width, height);
+        std::cout << "Generated" << std::endl;
+        cvtColor(I, I, COLOR_GRAY2RGBA);
+        std::cout << "Copied" << std::endl;
+        unsigned char* byteBuffer = I.data;
         return val(typed_memory_view(width * height * 4, byteBuffer));
     }
 
@@ -50,6 +59,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .constructor<>()
         .function("randarr", &Process::randarr)
         .function("blackImage", &Process::blackImage)
+        .function("mand", &Process::mand)
         .function("imdecode", &Process::my_imdecode)
         .function("allocate", &Process::allocate);
     register_vector<int>("vector<int>");

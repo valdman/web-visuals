@@ -14,14 +14,14 @@ export default async function main(): Promise<void> {
     const canvas = <HTMLCanvasElement>document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
-    setInterval(() => {
-        draw(processInstance, ctx);
-    }, 1000 / 30);
+    // setInterval(() => {
+    //     draw(processInstance, ctx);
+    // }, 1000 / 8);
     draw(processInstance, ctx);
 }
 
 function draw(processInstance: Process, ctx: CanvasRenderingContext2D) {
-    const resultVector = processInstance.randarr(WIDTH, HEIGHT);
+    const resultVector = processInstance.mand(WIDTH, HEIGHT);
     const imageData = new Uint8ClampedArray(resultVector);
 
     const img = new ImageData(imageData, WIDTH, HEIGHT);

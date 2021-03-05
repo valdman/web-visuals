@@ -5,7 +5,11 @@ cmake_policy(SET CMP0015 NEW)
 # cmake -DCMAKE_BUILD_TYPE=Release
 project(fractal-engine)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY engines/fractal)
-add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+if(EMSCRIPTEN)
+    add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main_web.cpp)
+else()
+    add_executable(fractal-engine ${CMAKE_CURRENT_SOURCE_DIR}/main_native.cpp)
+endif(EMSCRIPTEN)
 
 # OpenCV
 if(EMSCRIPTEN)
@@ -19,7 +23,10 @@ if(EMSCRIPTEN)
 
 else()
     set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
-    include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/FindOpenCV.cmake )
+    include_directories(/usr/local/include/opencv4)
+    include_directories(/Users/mghead/bin/opencv/build_native)
+    file(GLOB opencv_js "/Users/mghead/bin/opencv/build_native/lib/*.a")
+    target_link_libraries(fractal-engine ${opencv_js})
 endif(EMSCRIPTEN)
 
 # Emscripten
@@ -41,7 +48,7 @@ if(EMSCRIPTEN)
         --no-entry \
         --bind \
         -g4 \
-        --source-map-base /engines/fractal/ \
+        --source-map-base /static/ \
         "
     )
 
