@@ -22,7 +22,7 @@ if(EMSCRIPTEN)
     target_link_libraries(fractal-engine ${opencv_js})
 
 else()
-    set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
+    # set(OpenCV_DIR /usr/local/lib/cmake/opencv4)
     include_directories(/usr/local/include/opencv4)
     include_directories(/Users/mghead/bin/opencv/build_native)
     file(GLOB opencv_js "/Users/mghead/bin/opencv/build_native/lib/*.a")

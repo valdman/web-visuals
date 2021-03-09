@@ -1,11 +1,11 @@
-#include <emscripten/bind.h>
 #include <emscripten/val.h>
+#include <emscripten/bind.h>
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "mandelbrot.cpp"
+#include "fractal.h"
 
 using namespace cv;
 using namespace emscripten;
@@ -39,11 +39,12 @@ class Process {
     }
 
     val mand(int width, int height) {
-        auto I = generateImage(width, height);
+        Fract fractal(width, height);
+        double x1(-2.2), x2(1.2), y1(-1.7), y2(1.7);
+        auto maxIterations(80);
         std::cout << "Generated" << std::endl;
-        cvtColor(I, I, COLOR_GRAY2RGBA);
-        std::cout << "Copied" << std::endl;
-        unsigned char* byteBuffer = I.data;
+        auto f = fractal.mandelbrot(x1, y1, x2, y2, maxIterations);
+        unsigned char* byteBuffer = fractal.lastImage.data;
         return val(typed_memory_view(width * height * 4, byteBuffer));
     }
 
@@ -55,6 +56,11 @@ class Process {
 
 EMSCRIPTEN_BINDINGS(my_module) {
     class_<Mat>("Mat");
+    class_<Point2d>("Point2d");
+
+    class_<Fract>("Fract").constructor<int, int>()
+        .function("mandelbrot", &Fract::mandelbrot);
+
     class_<Process>("Process")
         .constructor<>()
         .function("randarr", &Process::randarr)
