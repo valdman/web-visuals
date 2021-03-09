@@ -5,13 +5,9 @@ type HSLTuple = [number, number, number];
 
 const gpu = new GPU();
 
-gpu.addFunction(iterationToRGB);
-gpu.addFunction(hslToRgb);
-gpu.addFunction(getBaseRgb);
-gpu.addFunction(rgbSmooth);
-gpu.addFunction(complexNorm);
-
-const render = gpu.createKernel(mandelbrotKernel).setGraphical(true);
+const renderKernel = gpu.createKernel(mandelbrotKernel).setGraphical(true);
+renderKernel.addFunction(rgbSmooth);
+renderKernel.addFunction(complexNorm);
 
 function mandelbrotKernel(
     scale: number,
@@ -101,6 +97,6 @@ export function renderMandelbrot(
     ci: number,
     hue_offset: number,
 ): HTMLCanvasElement {
-    render.setOutput([width, width])(scale, maxIter, cr, ci, hue_offset, width);
-    return render.canvas;
+    renderKernel.setOutput([width, width])(scale, maxIter, cr, ci, hue_offset, width);
+    return renderKernel.canvas;
 }
