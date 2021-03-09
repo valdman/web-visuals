@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import {zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
+import {select} from 'd3-selection';
 import {locateFile} from '@/wasm';
 import LoadFractalEngine, {Process} from '@/wasm/fractal';
 import {renderMandelbrot} from './mandelbrot';
 
-const WIDTH = 800;
-const HEIGHT = 600;
+const WIDTH = 1900;
+const ITERATIONS = 800;
 
 export default async function main(): Promise<void> {
     const module = await LoadFractalEngine({
@@ -15,8 +17,33 @@ export default async function main(): Promise<void> {
 
     const canvas = <HTMLCanvasElement>document.getElementById('c');
     const ctx = canvas.getContext('2d');
-    const mandelbrotCanvas = renderMandelbrot(4096, 0.9, 250, 0.155, 0.583, 70);
+    // const mandelbrotCanvas = renderJulia(WIDTH, 1.5, ITERATIONS, 0.285, 0, 120);
+    const mandelbrotCanvas = renderMandelbrot(WIDTH, 1, ITERATIONS, 0, 0);
     ctx.drawImage(mandelbrotCanvas, 0, 0);
+
+    let newZoom = 0;
+    let animationFrame = 0;
+    let startTime: number = null;
+
+    const zoomTarget = select(canvas);
+    zoomTarget
+        .call(zoom, zoomIdentity)
+        .call(
+            zoom().on('zoom.end', function (e) {
+                const z = e.transform.k.toString();
+                if (z != newZoom) {
+                    window.cancelAnimationFrame(animationFrame);
+                    newZoom = z;
+                }
+                animationFrame = window.requestAnimationFrame(function (timestamp) {
+                    startTime = startTime || timestamp;
+                    const time = timestamp - startTime;
+                    const { k } = zoomTransform(zoomTarget.node());
+                    renderMandelbrot(WIDTH, k, ITERATIONS, 0, 0);
+                    ctx.drawImage(mandelbrotCanvas, 0, 0);
+                });
+            }),
+        );
 }
 
 function draw(processInstance: Process, ctx: CanvasRenderingContext2D) {

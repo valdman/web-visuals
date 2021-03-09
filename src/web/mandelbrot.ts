@@ -1,4 +1,5 @@
 import {GPU} from 'gpu.js';
+import {add, Complex, mult} from './complex';
 
 type RGBTuple = [number, number, number];
 type HSLTuple = [number, number, number];
@@ -6,32 +7,57 @@ type HSLTuple = [number, number, number];
 const gpu = new GPU();
 
 const renderKernel = gpu.createKernel(mandelbrotKernel).setGraphical(true);
-renderKernel.addFunction(rgbSmooth);
+
+renderKernel.addFunction(getBaseRgb);
+renderKernel.addFunction(hslToRgb);
+renderKernel.addFunction(iterationToRGB);
+renderKernel.addFunction(rgbSmoothBernshtein);
+
 renderKernel.addFunction(complexNorm);
+renderKernel.addFunction(add);
+renderKernel.addFunction(mult);
+
+function juliaKernel(scale: number, maxIter: number, CR: number, CI: number, hueOffset: number, size: number): void {
+    const c: Complex = [CR, CI];
+
+    const ar = ((1 / scale) * (size / 2 - this.thread.x)) / (size / 2);
+    const ai = ((1 / scale) * (size / 2 - this.thread.y)) / (size / 2);
+    let z: Complex = [ar, ai];
+
+    // const smoothcolor = Math.exp(-complexNorm([ar, ai]));
+
+    let i = 0;
+    while (i < maxIter) {
+        z = add(mult(z, z), c);
+        if (complexNorm(z) > 2) break;
+        i++;
+    }
+    // const g = (i / maxIter) * 255.0;
+    const [r, g, b] = rgbSmoothBernshtein(i, maxIter);
+    this.color(r, g, b);
+}
 
 function mandelbrotKernel(
     scale: number,
     maxIter: number,
     CR: number,
     CI: number,
-    hueOffset: number,
     size: number,
 ): void {
-    let ar = ((1 / scale) * (size / 2 - this.thread.x)) / (size / 2);
-    let ai = ((1 / scale) * (size / 2 - this.thread.y)) / (size / 2);
+    const defaultCoordinateWidth = 3.4;
+    const dr = (defaultCoordinateWidth / scale) * ((this.thread.x / size) - 0.5);
+    const di = (defaultCoordinateWidth / scale) * ((this.thread.y / size) - 0.5);
+    let z: Complex = [0, 0];
+    const c: Complex = add([CR, CI], [dr, di]);
+
     let i = 0;
-
-    let smoothcolor = complexNorm(ar, ai);
-
     while (i < maxIter) {
-        const t = ai * ar * 2;
-        ar = ar * ar - ai * ai + CR;
-        ai = t + CI;
-        smoothcolor += Math.exp(-complexNorm(ar, ai));
-        if (ar * ar + ai * ai > 1000) break;
+        z = add(mult(z, z), c);
+        if (complexNorm(z) > 2) break;
         i++;
     }
-    const [r, g, b] = rgbSmooth(i, smoothcolor);
+    // const g = (i / maxIter) * 255.0;
+    const [r, g, b] = rgbSmoothBernshtein(i, maxIter);
     this.color(r, g, b);
 }
 
@@ -42,7 +68,16 @@ function rgbSmooth(iterations: number, smoothcolor: number): RGBTuple {
     return [r, g, b];
 }
 
-function complexNorm(r: number, i: number) {
+function rgbSmoothBernshtein(iterations: number, maxIter: number): RGBTuple {
+    const t = (iterations / maxIter) * 1.0;
+    const r = 15 * (1 - t) * (1 - t) * t * t * 255;
+    const g = 7 * (1 - t) * t * t * 255;
+    const b = 9 * (1-t) * t * t * 255;
+    return [r, g, b];
+}
+
+function complexNorm(z: Complex) {
+    const [r, i] = z;
     return Math.sqrt(r * r + i * i);
 }
 
@@ -52,7 +87,7 @@ function iterationToRGB(iterations: number, maxIter: number, hueOffset: number):
     }
 
     const h = (hueOffset + iterations) % 360;
-    const s = 0.75;
+    const s = 0.7;
     const l = 0.5;
 
     return hslToRgb([h, s, l]);
@@ -95,8 +130,7 @@ export function renderMandelbrot(
     maxIter: number,
     cr: number,
     ci: number,
-    hue_offset: number,
 ): HTMLCanvasElement {
-    renderKernel.setOutput([width, width])(scale, maxIter, cr, ci, hue_offset, width);
+    renderKernel.setDynamicOutput(true).setOutput([width, width])(scale, maxIter, cr, ci, width);
     return renderKernel.canvas;
 }
