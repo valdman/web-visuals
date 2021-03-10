@@ -7,18 +7,35 @@ type HSLTuple = [number, number, number];
 
 const gpu = new GPU();
 
-const renderKernel = gpu.createKernel(mandelbrotKernel).setGraphical(true);
+const mandelbrotKernel = gpu.createKernel(mandelbrotKernelFunc).setGraphical(true);
+const juliaKernel = gpu.createKernel(juliaKernelFunc).setGraphical(true);
 
-renderKernel.addFunction(getBaseRgb);
-renderKernel.addFunction(hslToRgb);
-renderKernel.addFunction(iterationToRGB);
-renderKernel.addFunction(rgbSmoothBernshtein);
+mandelbrotKernel.addFunction(getBaseRgb);
+mandelbrotKernel.addFunction(hslToRgb);
+mandelbrotKernel.addFunction(iterationToRGB);
+mandelbrotKernel.addFunction(rgbSmoothBernshtein);
 
-renderKernel.addFunction(complexNorm);
-renderKernel.addFunction(add);
-renderKernel.addFunction(mult);
+mandelbrotKernel.addFunction(complexNorm);
+mandelbrotKernel.addFunction(add);
+mandelbrotKernel.addFunction(mult);
 
-function juliaKernel(scale: number, maxIter: number, CR: number, CI: number, hueOffset: number, size: number): void {
+juliaKernel.addFunction(getBaseRgb);
+juliaKernel.addFunction(hslToRgb);
+juliaKernel.addFunction(iterationToRGB);
+juliaKernel.addFunction(rgbSmoothBernshtein);
+
+juliaKernel.addFunction(complexNorm);
+juliaKernel.addFunction(add);
+juliaKernel.addFunction(mult);
+
+function juliaKernelFunc(
+    scale: number,
+    maxIter: number,
+    CR: number,
+    CI: number,
+    hueOffset: number,
+    size: number,
+): void {
     const c: Complex = [CR, CI];
 
     const ar = ((1 / scale) * (size / 2 - this.thread.x)) / (size / 2);
@@ -38,16 +55,10 @@ function juliaKernel(scale: number, maxIter: number, CR: number, CI: number, hue
     this.color(r, g, b);
 }
 
-function mandelbrotKernel(
-    scale: number,
-    maxIter: number,
-    CR: number,
-    CI: number,
-    size: number,
-): void {
+function mandelbrotKernelFunc(scale: number, maxIter: number, CR: number, CI: number, size: number): void {
     const defaultCoordinateWidth = 1;
-    const dr = (defaultCoordinateWidth / scale) * ((this.thread.x / size) - 0.5);
-    const di = (defaultCoordinateWidth / scale) * ((this.thread.y / size) - 0.5);
+    const dr = (defaultCoordinateWidth / scale) * (this.thread.x / size - 0.5);
+    const di = (defaultCoordinateWidth / scale) * (this.thread.y / size - 0.5);
     let z: Complex = [0, 0];
     const c: Complex = add([CR, CI], [dr, di]);
 
@@ -125,6 +136,15 @@ function getBaseRgb(h: number, c: number, x: number): RGBTuple {
     }
 }
 
+export function renderJulia(width: number, scale: number, maxIter: number, cr: number, ci: number): HTMLCanvasElement {
+    if (!juliaKernel.output || mandelbrotKernel.output[0] !== width) {
+        juliaKernel.setDynamicOutput(true).setOutput([width, width]);
+    }
+    juliaKernel(scale, maxIter, cr, ci, 120, width);
+    return juliaKernel.canvas;
+}
+
+
 export function renderMandelbrot(
     width: number,
     scale: number,
@@ -132,9 +152,9 @@ export function renderMandelbrot(
     cr: number,
     ci: number,
 ): HTMLCanvasElement {
-    if (!renderKernel.output || renderKernel.output[0] !== width) {
-        renderKernel.setDynamicOutput(true).setOutput([width, width]);
+    if (!mandelbrotKernel.output || mandelbrotKernel.output[0] !== width) {
+        mandelbrotKernel.setDynamicOutput(true).setOutput([width, width]);
     }
-    renderKernel(scale, maxIter, cr, ci, width);
-    return renderKernel.canvas;
+    mandelbrotKernel(scale, maxIter, cr, ci, width);
+    return mandelbrotKernel.canvas;
 }

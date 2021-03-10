@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
+import {D3ZoomEvent, zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
 import {pointer, select} from 'd3-selection';
 import {locateFile} from '@/wasm';
 import LoadFractalEngine, {Process} from '@/wasm/fractal';
-import {renderMandelbrot} from './mandelbrot';
+import {renderJulia, renderMandelbrot} from './mandelbrot';
 
 const WIDTH = 1900;
-const ITERATIONS = 100;
+const ITERATIONS = 500;
 
 export default async function main(): Promise<void> {
     const module = await LoadFractalEngine({
@@ -21,32 +21,32 @@ export default async function main(): Promise<void> {
     const mandelbrotCanvas = renderMandelbrot(WIDTH, 1, ITERATIONS, 0, 0);
     ctx.drawImage(mandelbrotCanvas, 0, 0);
 
-    let newZoom = 0;
+    let newZoom = 1;
     let animationFrame = 0;
     const zoomTarget = select(canvas);
+    const zoomHandler = function (e: D3ZoomEvent<HTMLCanvasElement, unknown>) {
+        const {k, x, y} = zoomTransform(zoomTarget.node());
+        if (k != newZoom) {
+            window.cancelAnimationFrame(animationFrame);
+            newZoom = k;
+        }
+        animationFrame = window.requestAnimationFrame(function (timestamp) {
+            const mouseXy = pointer(e, zoomTarget.node());
+
+            const x_img_coords = (x / k) * 1.0;
+            const y_img_coords = (y / k) * 1.0;
+            const x_fract_coords = -x_img_coords / WIDTH;
+            const y_fract_coords = y_img_coords / WIDTH;
+
+            // transform.invert();
+            renderJulia(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
+            ctx.drawImage(mandelbrotCanvas, 0, 0);
+        });
+    };
+
     zoomTarget
         .call(zoom, zoomIdentity)
-        .call(
-            zoom().on('zoom.end', function (e) {
-                const z = e.transform.k.toString();
-                if (z != newZoom) {
-                    window.cancelAnimationFrame(animationFrame);
-                    newZoom = z;
-                }
-                animationFrame = window.requestAnimationFrame(function (timestamp) {
-                    const mouseXy = pointer(e, zoomTarget.node());
-                    const {k, x, y} = zoomTransform(zoomTarget.node());
-                    const x_img_coords = (x / k) * 1.0;
-                    const y_img_coords = (y / k) * 1.0;
-                    const x_fract_coords = -x_img_coords / WIDTH;
-                    const y_fract_coords = y_img_coords / WIDTH;
-
-                    // transform.invert();
-                    renderMandelbrot(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
-                    ctx.drawImage(mandelbrotCanvas, 0, 0);
-                });
-            }),
-        )
+        .call(zoom().on('zoom', zoomHandler))
         .on('click', function (e) {
             const mouseXy = pointer(e, zoomTarget.node());
             const {k, x, y} = zoomTransform(zoomTarget.node());
