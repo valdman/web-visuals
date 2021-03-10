@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {GPU} from 'gpu.js';
 import {add, Complex, mult} from './complex';
 
@@ -44,7 +45,7 @@ function mandelbrotKernel(
     CI: number,
     size: number,
 ): void {
-    const defaultCoordinateWidth = 3.4;
+    const defaultCoordinateWidth = 1;
     const dr = (defaultCoordinateWidth / scale) * ((this.thread.x / size) - 0.5);
     const di = (defaultCoordinateWidth / scale) * ((this.thread.y / size) - 0.5);
     let z: Complex = [0, 0];

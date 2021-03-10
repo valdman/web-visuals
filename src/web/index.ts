@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
-import {select, pointer} from 'd3-selection';
+import {pointer, select} from 'd3-selection';
 import {locateFile} from '@/wasm';
 import LoadFractalEngine, {Process} from '@/wasm/fractal';
 import {renderMandelbrot} from './mandelbrot';
 
 const WIDTH = 1900;
-const ITERATIONS = 200;
+const ITERATIONS = 100;
 
 export default async function main(): Promise<void> {
     const module = await LoadFractalEngine({
@@ -34,27 +34,25 @@ export default async function main(): Promise<void> {
                     newZoom = z;
                 }
                 animationFrame = window.requestAnimationFrame(function (timestamp) {
-                    const transform = zoomTransform(zoomTarget.node());
-                    console.log(x, y);
-                    renderMandelbrot(
-                        WIDTH,
-                        transform.k,
-                        ITERATIONS,
-                        (3.4 * transform.x) / WIDTH,
-                        (3.4 * transform.y) / WIDTH,
-                    );
+                    const mouseXy = pointer(e, zoomTarget.node());
+                    const {k, x, y} = zoomTransform(zoomTarget.node());
+                    const x_img_coords = (x / k) * 1.0;
+                    const y_img_coords = (y / k) * 1.0;
+                    const x_fract_coords = -x_img_coords / WIDTH;
+                    const y_fract_coords = y_img_coords / WIDTH;
+
+                    // transform.invert();
+                    renderMandelbrot(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
                     ctx.drawImage(mandelbrotCanvas, 0, 0);
                 });
             }),
-        );
-    zoomTarget.on('click', function (e) {
-        const xy = pointer(e, this);
-
-        const transform = zoomTransform(zoomTarget.node());
-        const xy1 = transform.invert(xy);
-
-        console.log('Mouse:[', xy[0], xy[1], '] Zoomed:[', xy1[0], xy1[1], ']');
-    });
+        )
+        .on('click', function (e) {
+            const mouseXy = pointer(e, zoomTarget.node());
+            const {k, x, y} = zoomTransform(zoomTarget.node());
+            console.log('Zoom state ', k, x, y);
+            console.log('Mouse click ', mouseXy);
+        });
 }
 
 function draw(processInstance: Process, ctx: CanvasRenderingContext2D) {
