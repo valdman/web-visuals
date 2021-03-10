@@ -22,6 +22,7 @@ mandelbrotKernel.addFunction(mult);
 juliaKernel.addFunction(getBaseRgb);
 juliaKernel.addFunction(hslToRgb);
 juliaKernel.addFunction(iterationToRGB);
+juliaKernel.addFunction(rgbSmooth);
 juliaKernel.addFunction(rgbSmoothBernshtein);
 
 juliaKernel.addFunction(complexNorm);
@@ -42,16 +43,17 @@ function juliaKernelFunc(
     const ai = ((1 / scale) * (size / 2 - this.thread.y)) / (size / 2);
     let z: Complex = [ar, ai];
 
-    // const smoothcolor = Math.exp(-complexNorm([ar, ai]));
+    let smoothcolor = Math.exp(-complexNorm(z));
 
     let i = 0;
     while (i < maxIter) {
         z = add(mult(z, z), c);
+        smoothcolor += Math.exp(-complexNorm(z));
         if (complexNorm(z) > 2) break;
         i++;
     }
     // const g = (i / maxIter) * 255.0;
-    const [r, g, b] = rgbSmoothBernshtein(i, maxIter);
+    const [r, g, b] = rgbSmooth(i, smoothcolor);
     this.color(r, g, b);
 }
 
@@ -137,7 +139,7 @@ function getBaseRgb(h: number, c: number, x: number): RGBTuple {
 }
 
 export function renderJulia(width: number, scale: number, maxIter: number, cr: number, ci: number): HTMLCanvasElement {
-    if (!juliaKernel.output || mandelbrotKernel.output[0] !== width) {
+    if (!juliaKernel.output || juliaKernel.output[0] !== width) {
         juliaKernel.setDynamicOutput(true).setOutput([width, width]);
     }
     juliaKernel(scale, maxIter, cr, ci, 120, width);

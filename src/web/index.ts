@@ -6,6 +6,7 @@ import LoadFractalEngine, {Process} from '@/wasm/fractal';
 import {renderJulia, renderMandelbrot} from './mandelbrot';
 
 const WIDTH = 1900;
+const HEIGHT = WIDTH;
 const ITERATIONS = 500;
 
 export default async function main(): Promise<void> {
@@ -17,9 +18,7 @@ export default async function main(): Promise<void> {
 
     const canvas = <HTMLCanvasElement>document.getElementById('c');
     const ctx = canvas.getContext('2d');
-    // const mandelbrotCanvas = renderJulia(WIDTH, 1.5, ITERATIONS, 0.285, 0, 120);
-    const mandelbrotCanvas = renderMandelbrot(WIDTH, 1, ITERATIONS, 0, 0);
-    ctx.drawImage(mandelbrotCanvas, 0, 0);
+    ctx.drawImage(renderJulia(WIDTH, 1, ITERATIONS, 0, 0), 0, 0);
 
     let newZoom = 1;
     let animationFrame = 0;
@@ -31,16 +30,14 @@ export default async function main(): Promise<void> {
             newZoom = k;
         }
         animationFrame = window.requestAnimationFrame(function (timestamp) {
-            const mouseXy = pointer(e, zoomTarget.node());
-
             const x_img_coords = (x / k) * 1.0;
             const y_img_coords = (y / k) * 1.0;
             const x_fract_coords = -x_img_coords / WIDTH;
             const y_fract_coords = y_img_coords / WIDTH;
 
             // transform.invert();
-            renderJulia(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
-            ctx.drawImage(mandelbrotCanvas, 0, 0);
+            const frameCanvas = renderJulia(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
+            ctx.drawImage(frameCanvas, 0, 0);
         });
     };
 
