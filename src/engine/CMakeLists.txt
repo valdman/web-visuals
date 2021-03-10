@@ -37,7 +37,8 @@ if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
     set(CMAKE_CXX_FLAGS "-std=c++11 \
         -fexceptions \
-        -s ENVIRONMENT=\"web\" \
+        -s ENVIRONMENT=web,worker \
+        -s EXPORT_NAME=Fractal \
         -s MODULARIZE=1 \
         -s ASSERTIONS=1 \
         -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
@@ -47,6 +48,7 @@ if(EMSCRIPTEN)
         -s ALLOW_MEMORY_GROWTH=1 \
         --no-entry \
         --bind \
+        -pthread \
         -g4 \
         --source-map-base /static/ \
         "

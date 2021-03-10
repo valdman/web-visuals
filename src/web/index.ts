@@ -1,21 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {D3ZoomEvent, zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
+import {zoom, zoomIdentity, zoomTransform} from 'd3-zoom';
 import {pointer, select} from 'd3-selection';
-import {locateFile} from '@/wasm';
-import LoadFractalEngine, {Process} from '@/wasm/fractal';
-import {renderJulia, renderMandelbrot} from './mandelbrot';
+
+import {renderJulia} from './mandelbrot';
 
 const WIDTH = 1900;
-const HEIGHT = WIDTH;
 const ITERATIONS = 500;
 
 export default async function main(): Promise<void> {
-    const module = await LoadFractalEngine({
-        locateFile,
-    });
-
-    const processInstance = new module.Process();
-
     const canvas = <HTMLCanvasElement>document.getElementById('c');
     const ctx = canvas.getContext('2d');
     ctx.drawImage(renderJulia(WIDTH, 1, ITERATIONS, 0, 0), 0, 0);
@@ -23,19 +14,19 @@ export default async function main(): Promise<void> {
     let newZoom = 1;
     let animationFrame = 0;
     const zoomTarget = select(canvas);
-    const zoomHandler = function (e: D3ZoomEvent<HTMLCanvasElement, unknown>) {
+
+    const zoomHandler = function () {
         const {k, x, y} = zoomTransform(zoomTarget.node());
         if (k != newZoom) {
             window.cancelAnimationFrame(animationFrame);
             newZoom = k;
         }
-        animationFrame = window.requestAnimationFrame(function (timestamp) {
+        animationFrame = window.requestAnimationFrame(function () {
             const x_img_coords = (x / k) * 1.0;
             const y_img_coords = (y / k) * 1.0;
             const x_fract_coords = -x_img_coords / WIDTH;
             const y_fract_coords = y_img_coords / WIDTH;
 
-            // transform.invert();
             const frameCanvas = renderJulia(WIDTH, k, ITERATIONS, x_fract_coords, y_fract_coords);
             ctx.drawImage(frameCanvas, 0, 0);
         });
@@ -51,24 +42,3 @@ export default async function main(): Promise<void> {
             console.log('Mouse click ', mouseXy);
         });
 }
-
-function draw(processInstance: Process, ctx: CanvasRenderingContext2D) {
-    const resultVector = processInstance.mand(WIDTH, HEIGHT);
-    const imageData = new Uint8ClampedArray(grayscaleImageData(resultVector));
-
-    const img = new ImageData(imageData, WIDTH, HEIGHT);
-    ctx.putImageData(img, 0, 0);
-}
-
-function grayscaleImageData(imageData: number[]) {
-    const data = imageData;
-    for (let i = 0; i < data.length; i += 4) {
-        const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-        data[i] = brightness;
-        data[i + 1] = brightness;
-        data[i + 2] = brightness;
-    }
-    return imageData;
-}
-
-main();
