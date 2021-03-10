@@ -131,6 +131,9 @@ export function renderMandelbrot(
     cr: number,
     ci: number,
 ): HTMLCanvasElement {
-    renderKernel.setDynamicOutput(true).setOutput([width, width])(scale, maxIter, cr, ci, width);
+    if (!renderKernel.output || renderKernel.output[0] !== width) {
+        renderKernel.setDynamicOutput(true).setOutput([width, width]);
+    }
+    renderKernel(scale, maxIter, cr, ci, width);
     return renderKernel.canvas;
 }
