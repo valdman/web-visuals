@@ -7,16 +7,15 @@ const WIDTH = 1900;
 const ITERATIONS = 500;
 
 export default async function main(): Promise<void> {
-    const canvas = <HTMLCanvasElement>document.getElementById('c');
-    const ctx = canvas.getContext('2d');
+    const canvasSelection = select<HTMLCanvasElement, unknown>('#c');
+    const ctx = canvasSelection.node().getContext('2d');
     ctx.drawImage(renderJulia(WIDTH, 1, ITERATIONS, 0, 0), 0, 0);
 
     let newZoom = 1;
     let animationFrame = 0;
-    const zoomTarget = select(canvas);
 
     const zoomHandler = function () {
-        const {k, x, y} = zoomTransform(zoomTarget.node());
+        const {k, x, y} = zoomTransform(canvasSelection.node());
         if (k != newZoom) {
             window.cancelAnimationFrame(animationFrame);
             newZoom = k;
@@ -32,12 +31,12 @@ export default async function main(): Promise<void> {
         });
     };
 
-    zoomTarget
+    canvasSelection
         .call(zoom, zoomIdentity)
         .call(zoom().on('zoom', zoomHandler))
         .on('click', function (e) {
-            const mouseXy = pointer(e, zoomTarget.node());
-            const {k, x, y} = zoomTransform(zoomTarget.node());
+            const mouseXy = pointer(e, canvasSelection.node());
+            const {k, x, y} = zoomTransform(canvasSelection.node());
             console.log('Zoom state ', k, x, y);
             console.log('Mouse click ', mouseXy);
         });

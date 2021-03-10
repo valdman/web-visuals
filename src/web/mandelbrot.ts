@@ -86,7 +86,7 @@ function rgbSmoothBernshtein(iterations: number, maxIter: number): RGBTuple {
     const t = (iterations / maxIter) * 1.0;
     const r = 15 * (1 - t) * (1 - t) * t * t * 255;
     const g = 7 * (1 - t) * t * t * 255;
-    const b = 9 * (1-t) * t * t * 255;
+    const b = 9 * (1 - t) * t * t * 255;
     return [r, g, b];
 }
 
@@ -145,7 +145,6 @@ export function renderJulia(width: number, scale: number, maxIter: number, cr: n
     juliaKernel(scale, maxIter, cr, ci, 120, width);
     return juliaKernel.canvas;
 }
-
 
 export function renderMandelbrot(
     width: number,
