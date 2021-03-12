@@ -7,7 +7,8 @@
   "scripts": {
     "build:watch": "npx webpack --mode=development --watch",
     "build": "npx webpack --mode=production",
-    "dev": "npx live-server dist/webapp --watch --verbose"
+    "dev": "sh ./scripts/dev.sh",
+    "start": "sh ./scripts/start.sh"
   },
   "devDependencies": {
     "eslint": "^7.20.0",

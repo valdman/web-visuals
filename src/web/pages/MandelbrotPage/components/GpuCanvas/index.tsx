@@ -1,4 +1,4 @@
-import React, {createRef, ReactElement, useEffect, useState} from 'react';
+import React, {Component, createRef, ReactElement, RefObject} from 'react';
 import {zoom, zoomIdentity, ZoomTransform, zoomTransform} from 'd3-zoom';
 import {pointer, select, Selection} from 'd3-selection';
 
@@ -9,49 +9,95 @@ interface Props {
     render({k, x, y}: ZoomTransform): HTMLCanvasElement;
 }
 
-export function GpuCanvas({width, render}: Props): ReactElement {
-    const canvasRef = createRef<HTMLCanvasElement>();
-    const [canvasSelection, setCanvasSelection] = useState<CanvasSelection>();
-
-    useEffect(() => {
-        if (!canvasSelection) {
-            return;
-        }
-        initD3({canvasSelection, width, render});
-    }, [canvasSelection, width, render]);
-
-    useEffect(() => {
-        const selection = select<HTMLCanvasElement, unknown>(canvasRef.current);
-        setCanvasSelection(selection);
-        const ctx = canvasSelection.node().getContext('2d');
-        ctx.drawImage(render(zoomIdentity), 0, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return <canvas ref={canvasRef} width={width} height={width} style={{width: 900, height: 900}} />;
+interface State {
+    canvasRef: RefObject<HTMLCanvasElement>;
+    currentZoom: ZoomTransform;
 }
 
-function initD3({canvasSelection, render}: {canvasSelection: CanvasSelection} & Props) {
-    let newZoom = '';
-    let animationFrame = 0;
+export class GpuCanvas extends Component<Props, State> {
+    canvasSelection: CanvasSelection;
 
-    const zoomHandler = function () {
-        const transform = zoomTransform(canvasSelection.node());
-        // const {k, x, y} = transform;
-        if (transform.toString() !== newZoom) {
-            window.cancelAnimationFrame(animationFrame);
-            newZoom = transform.toString();
+    draw(): void {
+        const {render} = this.props;
+        const {currentZoom} = this.state;
+
+        const canvasSelection = this.canvasSelection;
+        const canvas = canvasSelection.node();
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(render(currentZoom), 0, 0);
+    }
+
+    initD3(): void {
+        if (!this.state.canvasRef || !this.state.canvasRef.current) {
+            console.log('No node. sad.');
         }
-        animationFrame = window.requestAnimationFrame(function () {
-            const ctx = canvasSelection.node().getContext('2d');
-            ctx.drawImage(render(transform), 0, 0);
-        });
-    };
+        this.canvasSelection = select(this.state.canvasRef.current);
+        this.canvasSelection.call(zoom, zoomIdentity);
+        this.setState({currentZoom: zoomIdentity});
+    }
 
-    canvasSelection.call(zoom().on('zoom', zoomHandler)).on('click', function (e) {
-        const mouseXy = pointer(e, canvasSelection.node());
-        const {k, x, y} = zoomTransform(canvasSelection.node());
-        console.log('Zoom state ', k, x, y);
-        console.log('Mouse click ', mouseXy);
-    });
+    registerZoomCallback(): void {
+        const canvasSelection = this.canvasSelection;
+
+        if (!canvasSelection || !this.canvasSelection.node()) {
+            console.log('No node to register zoom callback');
+        }
+        const canvas = canvasSelection.node();
+        let newZoom = '';
+        let animationFrame = 0;
+
+        const zoomHandler = () => {
+            const transform = zoomTransform(canvas);
+            this.setState({currentZoom: transform});
+
+            if (transform.toString() !== newZoom) {
+                window.cancelAnimationFrame(animationFrame);
+                newZoom = transform.toString();
+            }
+            animationFrame = window.requestAnimationFrame(() => {
+                this.draw();
+            });
+        };
+        canvasSelection.call(zoom().on('zoom', zoomHandler)).on('click', function (e) {
+            const mouseXy = pointer(e, canvas);
+            const {k, x, y} = zoomTransform(canvas);
+            console.log('Zoom state ', k, x, y);
+            console.log('Mouse click ', mouseXy);
+        });
+    }
+
+    componentDidUpdate(prevProps: Props): void {
+        const {render} = this.props;
+        if (prevProps.render !== render) {
+            this.registerZoomCallback();
+            this.draw();
+        }
+    }
+
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            canvasRef: createRef(),
+            currentZoom: null,
+        };
+    }
+
+    componentDidMount(): void {
+        const {canvasRef} = this.state;
+        const {render} = this.props;
+        if (!canvasRef.current) {
+            return;
+        }
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.drawImage(render(zoomIdentity), 0, 0);
+        this.initD3();
+        this.registerZoomCallback();
+    }
+
+    render(): ReactElement {
+        const {width} = this.props;
+        const {canvasRef} = this.state;
+
+        return <canvas ref={canvasRef} width={width} height={width} style={{width: 900, height: 900}} />;
+    }
 }
