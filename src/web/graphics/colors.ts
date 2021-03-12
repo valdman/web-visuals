@@ -10,9 +10,9 @@ export function rgbSmooth(iterations: number, smoothcolor: number): RGBTuple {
 
 export function rgbSmoothBernshtein(iterations: number, maxIter: number): RGBTuple {
     const t = (iterations / maxIter) * 1.0;
-    const r = 15 * (1 - t) * (1 - t) * t * t * 255;
-    const g = 7 * (1 - t) * t * t * 255;
-    const b = 9 * (1 - t) * t * t * 255;
+    const r = 9 * Math.pow(1 - t, 1) * Math.pow(t, 3) * 255;
+    const g = 17 * Math.pow(1 - t, 2) * Math.pow(t, 3) * 255;
+    const b = 24 * Math.pow(1 - t, 4) * Math.pow(t, 3) * 255;
     return [r, g, b];
 }
 

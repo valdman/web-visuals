@@ -58,11 +58,11 @@ function juliaKernelFunc(
     this.color(r, g, b);
 }
 
-function mandelbrotKernelFunc(scale: number, maxIter: number, center: Complex, size: number): void {
+function mandelbrotKernelFunc(scale: number, maxIter: number, centerR: number, centerI: number, size: number): void {
     const dr = (1 / scale) * (this.thread.x / size - 0.5);
     const di = (1 / scale) * (this.thread.y / size - 0.5);
     let z: Complex = [0, 0];
-    const c: Complex = add(center, [dr, di]);
+    const c: Complex = add([centerR, centerI], [dr, di]);
 
     let i = 0;
     while (i < maxIter) {
@@ -110,9 +110,10 @@ export function renderMandelbrot({
     maxIter: number;
     c: Complex;
 }): HTMLCanvasElement {
+    const [cr, ci] = c;
     if (!mandelbrotKernel.output || mandelbrotKernel.output[0] !== width) {
         mandelbrotKernel.setDynamicOutput(true).setOutput([width, width]);
     }
-    (mandelbrotKernel as typeof mandelbrotKernelFunc)(scale, maxIter, c, width);
+    (mandelbrotKernel as typeof mandelbrotKernelFunc)(scale, maxIter, cr, ci, width);
     return mandelbrotKernel.canvas;
 }

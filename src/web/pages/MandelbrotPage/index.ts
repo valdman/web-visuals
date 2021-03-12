@@ -1,6 +1,6 @@
 import {createWidget} from '@/web/widget/createWidget';
 import controller from './controller';
-import {View as view} from './view';
+import {View as view} from './View';
 
 type Transform = string;
 
