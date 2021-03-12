@@ -17,3 +17,8 @@ export function mult(first: Complex, second: Complex): Complex {
     const [secondR, secondI] = second;
     return [firstR * secondR - firstI * secondI, firstR * secondI + firstI * secondR];
 }
+
+export function complexNorm(z: Complex): number {
+    const [r, i] = z;
+    return Math.sqrt(r * r + i * i);
+}
