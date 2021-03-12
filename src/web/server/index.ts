@@ -44,5 +44,5 @@ app.get('*', (_, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Quest webapp listening at http://localhost:${PORT}`);
+    console.log(`Quest webapp listening at http://0.0.0.0:${PORT}`);
 });

@@ -3,6 +3,7 @@ import Slider from 'react-slider';
 
 import {GpuCanvas} from '../components/GpuCanvas';
 
+import {Complex} from '@/web/complex';
 import {renderMandelbrot} from '@/web/graphics';
 import {transformToComplexCoordinates} from '@/web/graphics/coordinates';
 
@@ -14,7 +15,7 @@ export function View(): ReactElement {
 
     function renderCanvas({k, x, y}: {k: number; x: number; y: number}): HTMLCanvasElement {
         const c = transformToComplexCoordinates(width, {k, x, y});
-        const a = [0.18, 0.59];
+        const a: Complex = [0.18, 0.59];
 
         return renderMandelbrot({width, scale: k, c, maxIter});
     }

@@ -4,6 +4,7 @@ import {GPU} from 'gpu.js';
 import * as complex from '@/web/complex';
 import {Complex} from '@/web/complex';
 import * as colors from '@/web/graphics/colors';
+import * as coordinates from './coordinates';
 
 const {add, complexNorm, mult} = complex;
 const {getBaseRgb, hslToRgb, iterationToRGB, rgbSmooth, rgbSmoothBernshtein} = colors;
@@ -13,10 +14,13 @@ const gpu = new GPU();
 const mandelbrotKernel = gpu.createKernel(mandelbrotKernelFunc).setGraphical(true);
 const juliaKernel = gpu.createKernel(juliaKernelFunc).setGraphical(true);
 
+mandelbrotKernel.setTactic('precision');
+
 mandelbrotKernel.addFunction(getBaseRgb);
 mandelbrotKernel.addFunction(hslToRgb);
 mandelbrotKernel.addFunction(rgbSmoothBernshtein);
 mandelbrotKernel.addFunction(iterationToRGB);
+mandelbrotKernel.addFunction(rgbSmooth);
 
 mandelbrotKernel.addFunction(complexNorm);
 mandelbrotKernel.addFunction(add);
@@ -75,7 +79,7 @@ function mandelbrotKernelFunc(scale: number, maxIter: number, centerR: number, c
         i++;
     }
     // const g = (i / maxIter) * 255.0;
-    const [r, g, b] = iterationToRGB(i, maxIter, 70);
+    const [r, g, b] = rgbSmoothBernshtein(i, maxIter);
     this.color(r, g, b);
 }
 

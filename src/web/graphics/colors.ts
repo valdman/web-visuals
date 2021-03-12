@@ -2,7 +2,7 @@ export type RGBTuple = [number, number, number];
 export type HSLTuple = [number, number, number];
 
 export function rgbSmooth(iterations: number, smoothcolor: number): RGBTuple {
-    const r = 0.6 + 0.4 * Math.sin(smoothcolor * 0.1 + iterations * 0.63);
+    const r = 0.6 + 0.4 * Math.sin(smoothcolor * 0.1 + iterations * 0.53);
     const g = r * r;
     const b = r * g;
     return [r, g, b];
@@ -10,9 +10,9 @@ export function rgbSmooth(iterations: number, smoothcolor: number): RGBTuple {
 
 export function rgbSmoothBernshtein(iterations: number, maxIter: number): RGBTuple {
     const t = (iterations / maxIter) * 1.0;
-    const r = 9 * Math.pow(1 - t, 1) * Math.pow(t, 3) * 255;
-    const g = 17 * Math.pow(1 - t, 2) * Math.pow(t, 3) * 255;
-    const b = 24 * Math.pow(1 - t, 4) * Math.pow(t, 3) * 255;
+    const r = 4 * Math.pow(1 - t, 2) * Math.pow(t, 1);
+    const g = 9 * Math.pow(1 - t, 2) * Math.pow(t, 2);
+    const b = 11 * Math.pow(1 - t, 2) * Math.pow(t, 1);
     return [r, g, b];
 }
 
