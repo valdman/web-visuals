@@ -16,6 +16,7 @@ const juliaKernel = gpu.createKernel(juliaKernelFunc).setGraphical(true);
 mandelbrotKernel.addFunction(getBaseRgb);
 mandelbrotKernel.addFunction(hslToRgb);
 mandelbrotKernel.addFunction(rgbSmoothBernshtein);
+mandelbrotKernel.addFunction(iterationToRGB);
 
 mandelbrotKernel.addFunction(complexNorm);
 mandelbrotKernel.addFunction(add);
@@ -59,19 +60,22 @@ function juliaKernelFunc(
 }
 
 function mandelbrotKernelFunc(scale: number, maxIter: number, centerR: number, centerI: number, size: number): void {
-    const dr = (1 / scale) * (this.thread.x / size - 0.5);
-    const di = (1 / scale) * (this.thread.y / size - 0.5);
+    const dr = (this.thread.x / size - 0.5) / scale;
+    const di = (this.thread.y / size - 0.5) / scale;
     let z: Complex = [0, 0];
     const c: Complex = add([centerR, centerI], [dr, di]);
+
+    let smoothColor = Math.exp(-complexNorm(z));
 
     let i = 0;
     while (i < maxIter) {
         z = add(mult(z, z), c);
+        smoothColor += Math.exp(-complexNorm(z));
         if (complexNorm(z) > 2) break;
         i++;
     }
     // const g = (i / maxIter) * 255.0;
-    const [r, g, b] = rgbSmoothBernshtein(i, maxIter);
+    const [r, g, b] = iterationToRGB(i, maxIter, 70);
     this.color(r, g, b);
 }
 
