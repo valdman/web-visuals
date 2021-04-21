@@ -1,10 +1,12 @@
 # Prerequisites
+## Do not use sudo 😁
+
 ## Install Node JS
  1. Install `nvm` (https://github.com/nvm-sh/nvm#installing-and-updating)
  2. `nvm install latest && nvm use latest && nvm alias default latest`
  3. Test: `node -v`
 
-## Install yarn (Do not use sudo 😁)
+## Install yarn
  `npx i -g yarn`
 
 # Build
