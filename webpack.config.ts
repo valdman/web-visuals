@@ -162,6 +162,30 @@ const serverConfig: Configuration = {
     },
 };
 
+const cliConfig: Configuration = {
+    ...commonSettings,
+    name: 'cli',
+    entry: {
+        mandelbrot: './src/cli/mandelbrot.ts',
+    },
+    target: 'node14',
+    module: {
+        rules: getRules({target: 'server'}),
+    },
+    plugins: [
+        new ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
+    ],
+    node: {
+        __dirname: false,
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, 'dist', 'cli'),
+    },
+};
+
 const webappConfig: Configuration = {
     ...commonSettings,
     name: 'webapp',
@@ -200,4 +224,4 @@ const webappConfig: Configuration = {
     },
 };
 
-export default [serverConfig, webappConfig];
+export default [cliConfig, serverConfig, webappConfig];
