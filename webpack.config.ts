@@ -192,6 +192,7 @@ const webappConfig: Configuration = {
     target: ['web', 'es2020'],
     entry: {
         MandelbrotPage: './src/web/pages/MandelbrotPage/index.ts',
+        CellularPage: './src/web/pages/CellularPage/index.ts',
     },
     module: {
         rules: getRules({target: 'client'}),
