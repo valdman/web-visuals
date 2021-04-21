@@ -1,6 +1,6 @@
 import React, {Component, createRef, ReactElement, RefObject} from 'react';
 import {zoom, zoomIdentity, ZoomTransform, zoomTransform} from 'd3-zoom';
-import {pointer, select, Selection} from 'd3-selection';
+import {select, Selection} from 'd3-selection';
 import {transformToComplexCoordinates} from '@/web/graphics/coordinates';
 
 type CanvasSelection = Selection<HTMLCanvasElement, unknown, HTMLElement, unknown>;
@@ -59,7 +59,7 @@ export class GpuCanvas extends Component<Props, State> {
                 this.draw();
             });
         };
-        canvasSelection.call(zoom().on('zoom', zoomHandler)).on('click', function (e) {
+        canvasSelection.call(zoom().on('zoom', zoomHandler)).on('click', function () {
             const {k, x, y} = zoomTransform(canvas);
             console.log('Zoom state ', k, x, y);
             console.log('Center coords (complex): ', transformToComplexCoordinates(this.width, {k,  x,  y}));
