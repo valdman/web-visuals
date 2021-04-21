@@ -12,7 +12,7 @@ interface State {
     canvasRef: RefObject<HTMLCanvasElement>;
 }
 
-export class GpuCanvas extends Component<Props, State> {
+export class CellularGpuCanvas extends Component<Props, State> {
     canvasSelection: CanvasSelection;
 
     draw(): void {

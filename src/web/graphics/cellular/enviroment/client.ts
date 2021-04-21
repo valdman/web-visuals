@@ -7,24 +7,22 @@ const gpu = new GPU();
 export function enviromentSimulation({
     scene,
     width,
-    kernelRadius,
 }: {
     scene: Scene;
     width: number;
-    kernelRadius: number;
 }): Scene {
     if (!enviromentSimulationKernel.output || enviromentSimulationKernel.output[0] !== width) {
         enviromentSimulationKernel.setDynamicOutput(true).setOutput([width, width]);
     }
     interface ConvolutionKernelFunc {
-        (src: Scene, width: number, kernelRadius: number): Scene;
+        (src: Scene, width: number): Scene;
     }
-    return (<ConvolutionKernelFunc>enviromentSimulationKernel)(scene, width, kernelRadius);
+    return (<ConvolutionKernelFunc>enviromentSimulationKernel)(scene, width);
 }
 
 const enviromentSimulationKernel = gpu.createKernel(enviromentSimulationFunc);
 
-function enviromentSimulationFunc(src: Scene, width: number, kernelRadius: number): SceneCell {
+function enviromentSimulationFunc(src: Scene, width: number): SceneCell {
     const height = width;
 
     const {x, y}: {x: number; y: number} = this.thread;

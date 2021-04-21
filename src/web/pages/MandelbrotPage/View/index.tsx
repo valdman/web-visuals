@@ -1,7 +1,7 @@
 import React, {ReactElement, useState} from 'react';
 import Slider from 'react-slider';
 
-import {GpuCanvas} from '../components/GpuCanvas';
+import {ZoomGpuCanvas} from '../components/ZoomGpuCanvas';
 
 import {Complex} from '@/web/complex';
 import {renderMandelbrot} from '@/web/graphics/holomorph';
@@ -23,7 +23,7 @@ export function View(): ReactElement {
 
     return (
         <>
-            <GpuCanvas render={renderCanvas} width={width} />
+            <ZoomGpuCanvas render={renderCanvas} width={width} />
             <Slider
                 thumbClassName={s.slider}
                 onChange={(value) => setMaxIter(Number(value))}

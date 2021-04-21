@@ -16,7 +16,7 @@ interface State {
     currentZoom: ZoomTransform;
 }
 
-export class GpuCanvas extends Component<Props, State> {
+export class ZoomGpuCanvas extends Component<Props, State> {
     canvasSelection: CanvasSelection;
 
     draw(): void {
