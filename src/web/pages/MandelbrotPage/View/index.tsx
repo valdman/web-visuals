@@ -4,8 +4,8 @@ import Slider from 'react-slider';
 import {GpuCanvas} from '../components/GpuCanvas';
 
 import {Complex} from '@/web/complex';
-import {renderMandelbrot} from '@/web/graphics';
-import {transformToComplexCoordinates} from '@/web/graphics/coordinates';
+import {renderMandelbrot} from '@/web/graphics/holomorph';
+import {transformToComplexCoordinates} from '@/web/graphics/holomorph/coordinates';
 
 import s from './index.css';
 

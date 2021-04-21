@@ -4,7 +4,7 @@ import {EmptyCell, SandCell, Scene, SceneCell, SolidCell} from '@/web/models';
 
 const gpu = new GPU();
 
-export function convolutionKernel({
+export function enviromentSimulation({
     scene,
     width,
     kernelRadius,
@@ -13,18 +13,18 @@ export function convolutionKernel({
     width: number;
     kernelRadius: number;
 }): Scene {
-    if (!convolutionKernelFunc.output || convolutionKernelFunc.output[0] !== width) {
-        convolutionKernelFunc.setDynamicOutput(true).setOutput([width, width]);
+    if (!enviromentSimulationKernel.output || enviromentSimulationKernel.output[0] !== width) {
+        enviromentSimulationKernel.setDynamicOutput(true).setOutput([width, width]);
     }
     interface ConvolutionKernelFunc {
         (src: Scene, width: number, kernelRadius: number): Scene;
     }
-    return (<ConvolutionKernelFunc>convolutionKernelFunc)(scene, width, kernelRadius);
+    return (<ConvolutionKernelFunc>enviromentSimulationKernel)(scene, width, kernelRadius);
 }
 
-const convolutionKernelFunc = gpu.createKernel(convolution);
+const enviromentSimulationKernel = gpu.createKernel(enviromentSimulationFunc);
 
-function convolution(src: Scene, width: number, kernelRadius: number): SceneCell {
+function enviromentSimulationFunc(src: Scene, width: number, kernelRadius: number): SceneCell {
     const height = width;
 
     const {x, y}: {x: number; y: number} = this.thread;

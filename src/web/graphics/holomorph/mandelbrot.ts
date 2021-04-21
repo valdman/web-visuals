@@ -3,8 +3,7 @@ import {GPU} from 'gpu.js';
 
 import * as complex from '@/web/complex';
 import {Complex} from '@/web/complex';
-import * as colors from '@/web/graphics/colors';
-import * as coordinates from './coordinates';
+import * as colors from './colors';
 
 const {add, complexNorm, mult} = complex;
 const {getBaseRgb, hslToRgb, iterationToRGB, rgbSmooth, rgbSmoothBernshtein} = colors;

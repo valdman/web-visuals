@@ -1,7 +1,8 @@
 import React, {Component, createRef, ReactElement, RefObject} from 'react';
 import {zoom, zoomIdentity, ZoomTransform, zoomTransform} from 'd3-zoom';
 import {select, Selection} from 'd3-selection';
-import {transformToComplexCoordinates} from '@/web/graphics/coordinates';
+
+import {transformToComplexCoordinates} from '@/web/graphics/holomorph/coordinates';
 
 type CanvasSelection = Selection<HTMLCanvasElement, unknown, HTMLElement, unknown>;
 
