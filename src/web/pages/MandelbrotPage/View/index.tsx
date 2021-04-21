@@ -15,6 +15,7 @@ export function View(): ReactElement {
 
     function renderCanvas({k, x, y}: {k: number; x: number; y: number}): HTMLCanvasElement {
         const c = transformToComplexCoordinates(width, {k, x, y});
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const a: Complex = [0.18, 0.59];
 
         return renderMandelbrot({width, scale: k, c, maxIter});

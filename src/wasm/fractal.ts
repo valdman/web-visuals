@@ -2,7 +2,7 @@
 // @ts-ignore
 import LoadFractal from 'wasm/fractal/fractal-engine.js';
 
-import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory, Vector} from '@/wasm';
+import {ccall, cwrap, EmscriptenModule, EmscriptenModuleFactory} from '@/wasm';
 
 export declare class Process {
     constructor();

@@ -4,6 +4,7 @@ import qs from 'qs';
 export const ROUTES = {
     notFound: '/404',
     mandelbrot: '/mandelbrot',
+    cellular: '/cellular',
     forgetPassword: '/login?mode=forget-password',
 };
 

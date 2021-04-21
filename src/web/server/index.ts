@@ -31,6 +31,7 @@ app.get(ASSET_REDIRECT_HANDLES, assetHandler);
 app.post(HANDLES.resolver, resolverHandler);
 
 app.get(ROUTES.mandelbrot, getPage('MandelbrotPage'));
+app.get(ROUTES.cellular, getPage('CellularPage'));
 
 // Routes below this middleware will be allowed for auth-only
 // app.get('*', authRequiredFilter);

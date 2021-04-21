@@ -12,6 +12,6 @@ export interface Props<ViewProps> {
     epics?: Epic;
 }
 
-export const APP_TITLE = 'Quest Webapp';
+export const APP_TITLE = 'Web Visuals';
 
 export declare const App: FC<Props<unknown>>;
